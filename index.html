@@ -1,25 +1,385 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mestrino United FC</title>
+  <title>Mestrino UTD - Esordienti</title>
+
   <meta name="theme-color" content="#020617">
-  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
+
   <style>
-    html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: #020617; }
-    iframe { width: 100%; height: 100%; border: none; display: block; }
+    input, select, textarea { font-size: 16px !important; }
+    @media (max-width: 640px) {
+      .max-h-\[90vh\] { max-height: 95vh !important; }
+    }
   </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-  <iframe src="https://script.google.com/macros/s/AKfycbxTHtbTumZXxcRhVvz_PPgKKD657V48EVneFbKRdAaHdlLQRpGdxAo3EDQuvsQCSPYZ/exec"></iframe>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row">
+
+  <!-- Navigation Bar Mobile -->
+  <header class="md:hidden bg-slate-900 border-b border-slate-800 p-3 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-2">
+      <img id="team-logo-mobile" src="https://drive.google.com/thumbnail?id=1_dpGnWWsW_9iSoj1hdcgl-t_w4n83wwy&sz=w500" alt="Logo" class="w-8 h-8 rounded-full bg-white p-0.5">
+      <span class="font-bold text-xs text-white">Mestrino UTD</span>
+    </div>
+    <div class="flex items-center gap-1 overflow-x-auto">
+      <button onclick="switchTab(this, 'tab-dashboard')" class="nav-btn active-tab px-2.5 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] font-bold whitespace-nowrap">Dashboard</button>
+      <button onclick="switchTab(this, 'tab-rosa')" class="nav-btn px-2.5 py-1.5 rounded-lg text-slate-400 hover:bg-slate-800 text-[11px] font-bold whitespace-nowrap">Rosa</button>
+      <button onclick="switchTab(this, 'tab-allenamenti')" class="nav-btn px-2.5 py-1.5 rounded-lg text-slate-400 hover:bg-slate-800 text-[11px] font-bold whitespace-nowrap">Allenamenti</button>
+      <button onclick="switchTab(this, 'tab-partite')" class="nav-btn px-2.5 py-1.5 rounded-lg text-slate-400 hover:bg-slate-800 text-[11px] font-bold whitespace-nowrap">Partite</button>
+    </div>
+  </header>
+
+  <!-- Sidebar Desktop -->
+  <aside class="hidden md:flex w-64 bg-slate-900 border-r border-slate-800 flex-col p-4 gap-6 shrink-0">
+    <div class="flex items-center gap-3">
+      <img id="team-logo" src="https://drive.google.com/thumbnail?id=1_dpGnWWsW_9iSoj1hdcgl-t_w4n83wwy&sz=w500" alt="Mestrino United Logo" class="w-12 h-12 object-contain rounded-full bg-white p-0.5 shadow-md">
+      <div>
+        <h1 class="font-bold text-sm leading-tight text-white">Mestrino United FC</h1>
+        <p class="text-xs text-blue-400 font-bold">Esordienti</p>
+      </div>
+    </div>
+
+    <nav class="flex flex-col gap-2">
+      <button onclick="switchTab(this, 'tab-dashboard')" class="nav-btn active-tab flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-600 text-white text-xs font-semibold w-full text-left">
+        <i class="fa-solid fa-chart-line w-4"></i> Dashboard Stats
+      </button>
+      <button onclick="switchTab(this, 'tab-rosa')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 text-xs font-semibold w-full text-left">
+        <i class="fa-solid fa-users w-4"></i> Rosa Unica
+      </button>
+      <button onclick="switchTab(this, 'tab-allenamenti')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 text-xs font-semibold w-full text-left">
+        <i class="fa-solid fa-calendar-check w-4"></i> Allenamenti
+      </button>
+      <button onclick="switchTab(this, 'tab-partite')" class="nav-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-slate-800 text-xs font-semibold w-full text-left">
+        <i class="fa-solid fa-trophy w-4"></i> Partite 
+      </button>
+    </nav>
+
+    <div class="mt-auto pt-4 border-t border-slate-800">
+      <button onclick="openNewPlayerModal()" class="w-full px-3 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-user-plus"></i> + Nuovo Giocatore
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 bg-slate-950 p-6 overflow-y-auto">
+    <div id="status-banner" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
+
+    <!-- TAB DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold">Dashboard Generale</h2>
+          <p class="text-sm text-slate-400">Risultati, presenze e statistiche individuali</p>
+        </div>
+        
+        <div class="flex items-center gap-3 flex-wrap">
+          <label class="text-xs text-slate-400 font-semibold">Filtra Squadra:</label>
+          <select id="filter-squadra" onchange="renderAll()" class="bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded-md px-3 py-2 font-bold">
+            <option value="ALL">TUTTE LE SQUADRE (Generale)</option>
+            <option value="2014">Squadra 2014</option>
+            <option value="2015">Squadra 2015</option>
+            <option value="MISTA">Squadra MISTA</option>
+          </select>
+
+          <button onclick="loadDataFromBackend()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-md text-xs flex items-center gap-2">
+            <i class="fa-solid fa-rotate"></i> Aggiorna
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800">
+              <i class="fa-solid fa-clock-rotate-left mr-1"></i> Ultimo Risultato
+            </span>
+            <span id="last-match-team" class="text-xs font-bold text-amber-400"></span>
+          </div>
+
+          <div id="last-match-body">
+            <div class="text-center py-6 text-slate-500 text-xs">Nessuna partita completata.</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden flex flex-col justify-between">
+          <div class="flex justify-between items-start mb-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
+              <i class="fa-solid fa-calendar-day mr-1"></i> Prossimo Impegno
+            </span>
+            <span id="next-match-team" class="text-xs font-bold text-amber-400"></span>
+          </div>
+
+          <div id="next-match-body">
+            <div class="text-center py-6 text-slate-500 text-xs">Nessuna prossima partita schedulata.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs font-semibold uppercase text-slate-400">Rosa Giocatori</div>
+          <div class="text-2xl font-bold mt-1 text-white" id="kpi-players">0</div>
+        </div>
+        
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs font-semibold uppercase text-slate-400">Bilancio Partite</div>
+          <div class="text-xl font-bold mt-1" id="kpi-matches-record">
+            <span class="text-emerald-400" id="kpi-vittorie">0</span> - 
+            <span class="text-amber-400" id="kpi-pareggi">0</span> - 
+            <span class="text-red-400" id="kpi-sconfitte">0</span>
+          </div>
+        </div>
+        
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-semibold uppercase text-slate-400">Gol Fatti / Subiti</div>
+            <div class="text-xl font-bold mt-1 text-amber-400" id="kpi-total-goals">0 / 0</div>
+          </div>
+          <div class="mt-2 text-[11px] font-semibold text-emerald-400 flex items-center gap-1" id="kpi-conversion-rate">
+            <span>🎯 Realizzazione:</span> <span class="font-bold text-white">0%</span>
+          </div>
+        </div>
+        
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs font-semibold uppercase text-slate-400">Assist / Tiri</div>
+          <div class="text-xl font-bold mt-1 text-blue-400" id="kpi-total-shots-assist">0 / 0</div>
+        </div>
+        
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+          <div class="text-xs font-semibold uppercase text-slate-400">Presenza Allenamenti</div>
+          <div class="text-xl font-bold mt-1 text-purple-400" id="kpi-attendance-rate">0%</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-amber-400 border-b border-slate-800 pb-2">
+              <span>⚽ Marcatori</span>
+              <span class="text-[10px] text-slate-500">Gol</span>
+            </h3>
+            <div id="leaderboard-goals" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('goals')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-emerald-400 border-b border-slate-800 pb-2">
+              <span>🎯 Assistman</span>
+              <span class="text-[10px] text-slate-500">Assist</span>
+            </h3>
+            <div id="leaderboard-assists" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('assists')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-blue-400 border-b border-slate-800 pb-2">
+              <span>🚀 Tiri in Porta</span>
+              <span class="text-[10px] text-slate-500">Tiri</span>
+            </h3>
+            <div id="leaderboard-shots" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('shots')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-yellow-400 border-b border-slate-800 pb-2">
+              <span>⭐ Media Voti</span>
+              <span class="text-[10px] text-slate-500">M.Voto</span>
+            </h3>
+            <div id="leaderboard-voti" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('voti')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-purple-400 border-b border-slate-800 pb-2">
+              <span>🏃 Presenze Allenamento</span>
+              <span class="text-[10px] text-slate-500">Pres. (%)</span>
+            </h3>
+            <div id="leaderboard-attendance" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('attendance')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-emerald-400 border-b border-slate-800 pb-2">
+              <span>📅 Presenze Settimanali</span>
+              <span class="text-[10px] text-slate-500">Lun - Ven</span>
+            </h3>
+            <div id="stats-settimanali-container" class="divide-y divide-slate-800 text-xs"></div>
+          </div>
+          <button onclick="openFullLeaderboardModal('attendance-weekly')" class="w-full mt-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold text-center border border-slate-700">
+            Vedi tutti <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider flex items-center justify-between text-pink-400 border-b border-slate-800 pb-2">
+            <span>🎂 Compleanni (7 giorni)</span>
+            <i class="fa-solid fa-cake-candles"></i>
+          </h3>
+          <div id="upcoming-birthdays-container" class="divide-y divide-slate-800 text-xs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB ROSA -->
+    <section id="tab-rosa" class="tab-content hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-800 text-slate-400 border-b border-slate-700">
+            <tr>
+              <th class="p-3">ID</th>
+              <th class="p-3">Cognome e Nome</th>
+              <th class="p-3">Anno</th>
+              <th class="p-3">Data di Nascita</th>
+              <th class="p-3">Squadra Predefinita</th>
+              <th class="p-3">Ruolo</th>
+              <th class="p-3 text-right">Azione</th>
+            </tr>
+          </thead>
+          <tbody id="rosa-table-body" class="divide-y divide-slate-800 text-slate-200"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB ALLENAMENTI -->
+    <section id="tab-allenamenti" class="tab-content hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold">Programmazione Allenamenti</h2>
+          <p class="text-xs text-slate-400">Gestisci i prossimi allenamenti e consulta l'archivio storico</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+            <button onclick="setTrainingViewFilter('UPCOMING')" id="btn-train-upcoming" class="px-3 py-1.5 rounded-md text-xs font-bold bg-blue-600 text-white transition">
+              <i class="fa-solid fa-calendar-day mr-1"></i> In Programma
+            </button>
+            <button onclick="setTrainingViewFilter('ARCHIVE')" id="btn-train-archive" class="px-3 py-1.5 rounded-md text-xs font-bold text-slate-400 hover:text-white transition">
+              <i class="fa-solid fa-box-archive mr-1"></i> Archivio Passati
+            </button>
+          </div>
+
+          <button onclick="openNewTrainingModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-bold transition">
+            <i class="fa-solid fa-plus mr-1"></i> Nuovo Allenamento
+          </button>
+        </div>
+      </div>
+
+      <div id="allenamenti-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- TAB PARTITE -->
+    <section id="tab-partite" class="tab-content hidden space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold">Partite e Convocazioni</h2>
+          <p class="text-xs text-slate-400">Gestisci le partite, crea avvisi e registra i referti di gara</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
+            <button onclick="setMatchViewFilter('UPCOMING')" id="btn-match-upcoming" class="px-3 py-1.5 rounded-md text-xs font-bold bg-blue-600 text-white transition">
+              <i class="fa-solid fa-trophy mr-1"></i> In Programma
+            </button>
+            <button onclick="setMatchViewFilter('ARCHIVE')" id="btn-match-archive" class="px-3 py-1.5 rounded-md text-xs font-bold text-slate-400 hover:text-white transition">
+              <i class="fa-solid fa-box-archive mr-1"></i> Archivio Passate
+            </button>
+          </div>
+
+          <button onclick="openNewMatchModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-md text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Nuova Partita
+          </button>
+        </div>
+      </div>
+
+      <div id="partite-container" class="space-y-3"></div>
+    </section>
+  </main>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+    // COLLEGA IL TUO LINK APPS SCRIPT QUI SOTTO
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxTHtbTumZXxcRhVvz_PPgKKD657V48EVneFbKRdAaHdlLQRpGdxAo3EDQuvsQCSPYZ/exec";
+    const LOGO_SRC = "https://drive.google.com/thumbnail?id=1_dpGnWWsW_9iSoj1hdcgl-t_w4n83wwy&sz=w500";
+    
+    let appData = null;
+
+    function loadDataFromBackend() {
+      showStatusBanner("Caricamento dati in corso...", "bg-blue-900 text-blue-200 border border-blue-700");
+      
+      // Se caricato nativamente tramite GitHub, usa fetch Web API
+      fetch(APPS_SCRIPT_URL + "?action=getData")
+        .then(response => response.json())
+        .then(data => onDataLoaded(data))
+        .catch(err => onError(err));
+    }
+
+    function onDataLoaded(data) {
+      appData = data;
+      hideStatusBanner();
+      renderAll();
+    }
+
+    function showStatusBanner(msg, classes) {
+      const b = document.getElementById('status-banner');
+      if (!b) return;
+      b.className = `mb-4 p-3 rounded-lg text-xs font-semibold ${classes}`;
+      b.innerText = msg;
+      b.classList.remove('hidden');
+    }
+
+    function hideStatusBanner() {
+      document.getElementById('status-banner')?.classList.add('hidden');
+    }
+
+    function onError(err) {
+      showStatusBanner("Errore di caricamento: " + (err.message || err), "bg-red-900 text-red-200 border border-red-700");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+      loadDataFromBackend();
+    });
+
+    function switchTab(btn, tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white');
+        b.classList.add('text-slate-400');
+      });
+
+      document.getElementById(tabId)?.classList.remove('hidden');
+      btn.classList.add('bg-blue-600', 'text-white');
+      btn.classList.remove('text-slate-400');
     }
   </script>
 </body>
