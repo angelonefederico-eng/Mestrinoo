@@ -1,0 +1,16 @@
+{
+  "short_name": "MestrinoUTD",
+  "name": "Mestrino United - Esordienti",
+  "icons": [
+    {
+      "src": "https://drive.google.com/thumbnail?id=1_dpGnWWsW_9iSoj1hdcgl-t_w4n83wwy&sz=w500",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617"
+}
