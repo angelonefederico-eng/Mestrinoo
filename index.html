@@ -1,6 +1,31 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <style>
+  /* Attiva lo scorrimento nativo e fluido su iOS/Android */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Assicura che l'iframe o il contenitore principale possa scorrere in entrambe le direzioni */
+  main, .tab-content {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  /* Evita il blocco dello scorrimento nelle modali */
+  .max-h-\[90vh\], .max-h-\[85vh\] {
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+</style>
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Mestrino UTD - Esordienti</title>
@@ -304,5 +329,23 @@
       loadDataFromBackend();
     });
   </script>
+  <script>
+  // Inserisce uno stato nella cronologia ogni volta che si apre una modale
+  function registerModalHistory() {
+    window.history.pushState({ modalOpen: true }, "");
+  }
+
+  // Intercetta la pressione del tasto "Indietro" del telefono
+  window.addEventListener('popstate', function(event) {
+    // Trova ed elimina/nasconde tutte le modali aperte
+    const openModals = document.querySelectorAll('.fixed:not(.hidden)');
+    if (openModals.length > 0) {
+      openModals.forEach(modal => modal.classList.add('hidden'));
+    }
+  });
+
+  // Aggiorna le tue funzioni di apertura modali per chiamare registerModalHistory()
+  // Es: quando apri una modale, aggiungi: registerModalHistory();
+</script>
 </body>
 </html>
