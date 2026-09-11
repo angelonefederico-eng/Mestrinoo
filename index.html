@@ -28,12 +28,18 @@
     @media (max-width: 640px) {
       .max-h-\[90vh\] { max-height: 95vh !important; }
     }
+    /* Disattiva il "pull-to-refresh" e forza lo scroll fluido di pagina */
+html, body {
+  overscroll-behavior-y: none !important;
+  touch-action: pan-y !important;
+  overflow-y: scroll !important;
+}
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row">
+<body class="bg-slate-950 text-slate-100 font-sans antialiased border-0 p-0 m-0">
 
   <!-- Navigation Bar Mobile -->
   <header class="md:hidden bg-slate-900 border-b border-slate-800 p-3 flex items-center justify-between sticky top-0 z-40">
@@ -76,7 +82,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 bg-slate-950 p-6 overflow-y-auto">
+  <main class="bg-slate-950 p-4 md:p-6 min-h-screen">
     <div id="status-banner" class="hidden mb-4 p-3 rounded-lg text-xs font-semibold"></div>
 
     <!-- TAB DASHBOARD -->
